@@ -19,6 +19,22 @@ fi
 export STARSHIP_CONFIG="${${(%):-%x}:A:h:h}/starship/machinist.toml"
 eval "$(starship init zsh)"
 
+() {
+  local font=MesloLGSNerdFontMono-Regular.ttf
+  [[ -f $HOME/Library/Fonts/$font || -f /Library/Fonts/$font || -f $HOME/.local/share/fonts/Meslo/$font ]] && return
+  if [[ $OSTYPE == darwin* ]]; then
+    (( $+commands[brew] )) || return
+    print -u2 "machinist: MesloLGS Nerd Font not found, installing it…"
+    brew install --cask font-meslo-lg-nerd-font
+  elif (( $+commands[fc-list] && $+commands[curl] && $+commands[tar] )); then
+    fc-list : family | grep -q "MesloLGS Nerd Font Mono" && return
+    print -u2 "machinist: MesloLGS Nerd Font not found, installing it…"
+    mkdir -p $HOME/.local/share/fonts/Meslo
+    curl -fsSL https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Meslo.tar.xz |
+      tar -xJ -C $HOME/.local/share/fonts/Meslo && fc-cache -f
+  fi
+}
+
 export SCLIDE_COLOR="#94e344" SCLIDE_FADE_COLOR="#211e20"
 function clear {
   if (( $+commands[sclide-clear] )); then sclide-clear; else command clear "$@"; fi

@@ -83,6 +83,8 @@ Severity takes its own scale:
 |------|-------|--------|
 | swift-log | `Machinist` library in this package | Shipped |
 | Ghostty | [`ports/ghostty/machinist`](ports/ghostty/machinist) | Shipped |
+| iTerm2 | [`ports/iterm2/Machinist.json`](ports/iterm2/Machinist.json) | Shipped |
+| Terminal | [`ports/terminal/Machinist.terminal`](ports/terminal/Machinist.terminal) | Shipped |
 | Starship | [`ports/starship/machinist.toml`](ports/starship/machinist.toml) | Shipped |
 | Oh My Zsh | [`ports/oh-my-zsh/machinist.zsh-theme`](ports/oh-my-zsh/machinist.zsh-theme) | Shipped |
 | sclide | [`ports/sclide/sclide-clear.cpp`](ports/sclide/sclide-clear.cpp) | Shipped |
@@ -122,6 +124,32 @@ theme = machinist
 With Ghostty on Machinist, anything that colors by ANSI slot — including the
 swift-log port — picks up the palette.
 
+## iTerm2 and Terminal
+
+Import the profile for your terminal:
+
+- **iTerm2:** copy [`Machinist.json`](ports/iterm2/Machinist.json) into
+  `~/Library/Application Support/iTerm2/DynamicProfiles`. iTerm2 loads it as
+  a Machinist profile, colors and font together; select it in Settings >
+  Profiles and choose Other Actions > Set as Default. For colors alone,
+  double-click [`Machinist.itermcolors`](ports/iterm2/Machinist.itermcolors)
+  and choose it under Profiles > Colors > Color Presets.
+- **Terminal:** double-click
+  [`Machinist.terminal`](ports/terminal/Machinist.terminal) to add a profile;
+  select it in Settings > Profiles, and click Default to make it the default.
+
+Both iTerm2 files fill the light-mode and dark-mode color sets, so the theme
+stays dark when iTerm2 keeps separate colors for each. The iTerm2 and Terminal
+profiles set MesloLGS Nerd Font Mono at 13 pt, since the Starship prompt's
+glyphs need a Nerd Font; the Oh My Zsh theme installs it if it's missing.
+
+All three files are generated from the Ghostty theme. After changing
+`ports/ghostty/machinist`, regenerate them:
+
+```sh
+swift Scripts/terminal-profiles.swift
+```
+
 ## Oh My Zsh
 
 The `machinist` theme draws the Starship prompt below. Link it into your
@@ -140,8 +168,11 @@ Link the theme rather than copying it: it finds `machinist.toml` relative to
 its own location. If Starship isn't installed, the theme installs it once —
 with Homebrew when available, otherwise with Starship's installer into
 `~/.local/bin` — and falls back to the default prompt if neither works.
-Remove any `eval "$(starship init zsh)"` line from `~/.zshrc`; the theme runs
-it.
+Likewise, if MesloLGS Nerd Font is missing, the theme installs it: the
+`font-meslo-lg-nerd-font` cask on macOS, or the Nerd Fonts release into
+`~/.local/share/fonts` on Linux. Without an installer, it leaves the font
+alone. Remove any `eval "$(starship init zsh)"` line from `~/.zshrc`; the
+theme runs it.
 
 When `sclide-clear` is on your `PATH`, `clear` plays a
 [sclide](https://github.com/intriXlabs/sclide) wipe in the theme's colors: a
