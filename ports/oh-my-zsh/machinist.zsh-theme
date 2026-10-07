@@ -36,6 +36,31 @@ eval "$(starship init zsh)"
 }
 
 export SCLIDE_COLOR="#94e344" SCLIDE_FADE_COLOR="#211e20"
+
+function _machinist_background {
+  local saved reply char
+  saved=$(stty -g < /dev/tty 2>/dev/null) || return 1
+  stty -echo -icanon < /dev/tty
+  print -n $'\e]11;?\a' > /dev/tty
+  while read -r -s -k 1 -t 0.2 char < /dev/tty; do
+    [[ $char == $'\a' || $char == '\' ]] && break
+    reply+=$char
+  done
+  stty $saved < /dev/tty
+  [[ $reply =~ 'rgb:([0-9a-fA-F]{2})[0-9a-fA-F]*/([0-9a-fA-F]{2})[0-9a-fA-F]*/([0-9a-fA-F]{2})' ]] || return 1
+  REPLY="#${match[1]}${match[2]}${match[3]}"
+}
+
 function clear {
-  if (( $+commands[sclide-clear] )); then sclide-clear; else command clear "$@"; fi
+  if (( ! $+commands[sclide-clear] )); then
+    command clear "$@"
+    return
+  fi
+  local sweep=$SCLIDE_COLOR fade=$SCLIDE_FADE_COLOR
+  if _machinist_background; then
+    fade=$REPLY
+    local red=$(( 16#${REPLY[2,3]} )) green=$(( 16#${REPLY[4,5]} )) blue=$(( 16#${REPLY[6,7]} ))
+    (( 2126 * red + 7152 * green + 722 * blue > 1275000 )) && sweep="#3d7a1f"
+  fi
+  SCLIDE_COLOR=$sweep SCLIDE_FADE_COLOR=$fade sclide-clear
 }

@@ -187,8 +187,10 @@ alone. Remove any `eval "$(starship init zsh)"` line from `~/.zshrc`; the
 theme runs it.
 
 When `sclide-clear` is on your `PATH`, `clear` plays a
-[sclide](https://github.com/intriXlabs/sclide) wipe in the theme's colors: a
-`#94e344` sweep fading into the `#211e20` background. Without it, `clear`
+[sclide](https://github.com/intriXlabs/sclide) wipe in the theme's colors. It
+asks the terminal for its background color and fades into exactly that, with
+a `#94e344` sweep on a dark background or `#3d7a1f` on a light one; if the
+terminal doesn't answer, it assumes dark. Without `sclide-clear`, `clear`
 behaves as usual. Build it from [`ports/sclide`](ports/sclide), which reads
 its colors from `SCLIDE_COLOR` and `SCLIDE_FADE_COLOR`:
 
