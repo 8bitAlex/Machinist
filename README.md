@@ -85,6 +85,7 @@ Severity takes its own scale:
 | Ghostty | [`ports/ghostty/machinist`](ports/ghostty/machinist) | Shipped |
 | Starship | [`ports/starship/machinist.toml`](ports/starship/machinist.toml) | Shipped |
 | Oh My Zsh | [`ports/oh-my-zsh/machinist.zsh-theme`](ports/oh-my-zsh/machinist.zsh-theme) | Shipped |
+| sclide | [`ports/sclide/sclide-clear.cpp`](ports/sclide/sclide-clear.cpp) | Shipped |
 | tmux (Oh My Tmux) | [`ports/tmux/oh-my-tmux.conf`](ports/tmux/oh-my-tmux.conf) | Shipped |
 
 A new port maps each role to its tool's styling and keeps the rules. Ports
@@ -141,6 +142,18 @@ with Homebrew when available, otherwise with Starship's installer into
 `~/.local/bin` — and falls back to the default prompt if neither works.
 Remove any `eval "$(starship init zsh)"` line from `~/.zshrc`; the theme runs
 it.
+
+When `sclide-clear` is on your `PATH`, `clear` plays a
+[sclide](https://github.com/intriXlabs/sclide) wipe in the theme's colors: a
+`#94e344` sweep fading into the `#211e20` background. Without it, `clear`
+behaves as usual. Build it from [`ports/sclide`](ports/sclide), which reads
+its colors from `SCLIDE_COLOR` and `SCLIDE_FADE_COLOR`:
+
+```sh
+git clone --depth 1 https://github.com/intriXlabs/sclide.git /tmp/sclide
+c++ -std=c++17 -O2 -I /tmp/sclide -o ~/.local/bin/sclide-clear \
+  ~/code/machinist/ports/sclide/sclide-clear.cpp
+```
 
 ## Starship
 

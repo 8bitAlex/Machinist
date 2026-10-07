@@ -18,3 +18,8 @@ fi
 
 export STARSHIP_CONFIG="${${(%):-%x}:A:h:h}/starship/machinist.toml"
 eval "$(starship init zsh)"
+
+export SCLIDE_COLOR="#94e344" SCLIDE_FADE_COLOR="#211e20"
+function clear {
+  if (( $+commands[sclide-clear] )); then sclide-clear; else command clear "$@"; fi
+}
