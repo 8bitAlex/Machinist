@@ -83,7 +83,8 @@ Severity takes its own scale:
 |------|-------|--------|
 | swift-log | `Machinist` library in this package | Shipped |
 | Ghostty | [`ports/ghostty/machinist`](ports/ghostty/machinist) | Shipped |
-| Starship | [`ports/starship/palette.toml`](ports/starship/palette.toml) | Shipped |
+| Starship | [`ports/starship/machinist.toml`](ports/starship/machinist.toml) | Shipped |
+| Oh My Zsh | [`ports/oh-my-zsh/machinist.zsh-theme`](ports/oh-my-zsh/machinist.zsh-theme) | Shipped |
 | tmux (Oh My Tmux) | [`ports/tmux/oh-my-tmux.conf`](ports/tmux/oh-my-tmux.conf) | Shipped |
 
 A new port maps each role to its tool's styling and keeps the rules. Ports
@@ -120,13 +121,38 @@ theme = machinist
 With Ghostty on Machinist, anything that colors by ANSI slot — including the
 swift-log port — picks up the palette.
 
+## Oh My Zsh
+
+The `machinist` theme draws the Starship prompt below. Link it into your
+custom themes and select it in `~/.zshrc`:
+
+```sh
+ln -s ~/code/machinist/ports/oh-my-zsh/machinist.zsh-theme \
+  ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/machinist.zsh-theme
+```
+
+```sh
+ZSH_THEME="machinist"
+```
+
+Link the theme rather than copying it: it finds `machinist.toml` relative to
+its own location. If Starship isn't installed, the theme installs it once —
+with Homebrew when available, otherwise with Starship's installer into
+`~/.local/bin` — and falls back to the default prompt if neither works.
+Remove any `eval "$(starship init zsh)"` line from `~/.zshrc`; the theme runs
+it.
+
 ## Starship
 
-`palette.toml` is a drop-in palette for prompts built on Starship's Gruvbox
-Rainbow preset, so it keeps that preset's key names: `color_orange` through
-`color_blue` are the bar's segments 1–4, `color_bg3` and `color_bg1` segments
-5 and 6. Paste it over the preset's palette. Segments 1 and 2 are bright, so
-point their text at `color_bg0` instead of `color_fg0`:
+`machinist.toml` is a complete prompt: Starship's Gruvbox Rainbow layout in
+the Machinist palette. Use it through the Oh My Zsh theme, or directly with
+`STARSHIP_CONFIG=~/code/machinist/ports/starship/machinist.toml`.
+
+To recolor a different layout, copy its `[palettes.machinist]` table. It keeps
+the Gruvbox Rainbow preset's key names: `color_orange` through `color_blue`
+are the bar's segments 1–4, `color_bg3` and `color_bg1` segments 5 and 6.
+Segments 1 and 2 are bright, so point their text at `color_bg0` instead of
+`color_fg0`:
 
 ```toml
 [directory]
