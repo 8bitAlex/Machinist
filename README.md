@@ -16,28 +16,31 @@ nothing reads as faded.
 
 ### Palette
 
-Dark only, for now. Every text color reaches at least 4.5:1 against the
-background.
+Machinist comes in dark and light. In each, every text color reaches at least
+4.5:1 against the background. On light, the bright slots are the more vivid
+shade rather than the lighter one, so they stay readable.
 
-| Slot | Normal | Bright |
-|------|--------|--------|
-| black | `#3b3638` | `#85859a` |
-| red | `#e0604f` | `#f27a63` |
-| green | `#40985e` | `#94e344` |
-| yellow | `#d9a93a` | `#f0cc5a` |
-| blue | `#5b8fc9` | `#84b3ec` |
-| magenta | `#d65ca6` | `#e87fc0` |
-| cyan | `#5ab9a8` | `#7fd9c4` |
-| white | `#a0a08b` | `#e9efec` |
+| Slot | Dark | Dark bright | Light | Light bright |
+|------|------|-------------|-------|--------------|
+| black | `#3b3638` | `#85859a` | `#211e20` | `#555568` |
+| red | `#e0604f` | `#f27a63` | `#9e3324` | `#b8402f` |
+| green | `#40985e` | `#94e344` | `#1a644e` | `#3d7a1f` |
+| yellow | `#d9a93a` | `#f0cc5a` | `#765508` | `#8a6410` |
+| blue | `#5b8fc9` | `#84b3ec` | `#284f85` | `#2f5f9e` |
+| magenta | `#d65ca6` | `#e87fc0` | `#8a2a67` | `#a3337a` |
+| cyan | `#5ab9a8` | `#7fd9c4` | `#11554e` | `#17675e` |
+| white | `#a0a08b` | `#e9efec` | `#a0a08b` | `#f6f8f7` |
 
-| Surface | Color |
-|---------|-------|
-| Background | `#211e20` |
-| Foreground | `#e9efec` |
-| Cursor | `#94e344` |
-| Selection | `#04373b` |
-| Panel, such as a status bar | `#1a644e` |
-| Accent, behind text only | `#6b1fb1` |
+Dark black and light white are for surfaces, never text.
+
+| Surface | Dark | Light |
+|---------|------|-------|
+| Background | `#211e20` | `#e9efec` |
+| Foreground | `#e9efec` | `#211e20` |
+| Cursor | `#94e344` | `#3d7a1f` |
+| Selection | `#04373b` | `#c4ddd2` |
+| Panel, such as a status bar | `#1a644e` | `#1a644e` |
+| Accent, behind text only | `#6b1fb1` | `#6b1fb1` |
 
 ### Roles
 
@@ -82,7 +85,7 @@ Severity takes its own scale:
 | Tool | Where | Status |
 |------|-------|--------|
 | swift-log | `Machinist` library in this package | Shipped |
-| Ghostty | [`ports/ghostty/machinist`](ports/ghostty/machinist) | Shipped |
+| Ghostty | [`ports/ghostty/machinist`](ports/ghostty/machinist), [`machinist-light`](ports/ghostty/machinist-light) | Shipped |
 | iTerm2 | [`ports/iterm2/Machinist.json`](ports/iterm2/Machinist.json) | Shipped |
 | Terminal | [`ports/terminal/Machinist.terminal`](ports/terminal/Machinist.terminal) | Shipped |
 | Starship | [`ports/starship/machinist.toml`](ports/starship/machinist.toml) | Shipped |
@@ -96,7 +99,8 @@ that adopts them, and a config that can't include another file copies the
 port's values in.
 
 Powerline-style bars — the Starship prompt and the tmux status bar — run one
-gradient, bright to deep, so both read as the same object:
+gradient, bright to deep, so both read as the same object. Each segment
+carries its own background, so the bars look the same in dark and light:
 
 | Segment | Background | Text |
 |---------|------------|------|
@@ -109,17 +113,20 @@ gradient, bright to deep, so both read as the same object:
 
 ## Ghostty
 
-Link the theme into Ghostty's themes directory, then select it in your
-Ghostty config:
+Link both themes into Ghostty's themes directory, then select them in your
+Ghostty config; Ghostty follows the system appearance:
 
 ```sh
 mkdir -p ~/.config/ghostty/themes
 ln -s ~/code/machinist/ports/ghostty/machinist ~/.config/ghostty/themes/machinist
+ln -s ~/code/machinist/ports/ghostty/machinist-light ~/.config/ghostty/themes/machinist-light
 ```
 
 ```
-theme = machinist
+theme = light:machinist-light,dark:machinist
 ```
+
+Use `theme = machinist` or `theme = machinist-light` to pin one.
 
 With Ghostty on Machinist, anything that colors by ANSI slot — including the
 swift-log port — picks up the palette.
@@ -130,21 +137,26 @@ Import the profile for your terminal:
 
 - **iTerm2:** copy [`Machinist.json`](ports/iterm2/Machinist.json) into
   `~/Library/Application Support/iTerm2/DynamicProfiles`. iTerm2 loads it as
-  a Machinist profile, colors and font together; select it in Settings >
-  Profiles and choose Other Actions > Set as Default. For colors alone,
-  double-click [`Machinist.itermcolors`](ports/iterm2/Machinist.itermcolors)
+  a Machinist profile, colors and font together, that follows the system
+  appearance; select it in Settings > Profiles and choose Other Actions > Set
+  as Default. For colors alone, double-click
+  [`Machinist.itermcolors`](ports/iterm2/Machinist.itermcolors) or
+  [`Machinist Light.itermcolors`](ports/iterm2/Machinist%20Light.itermcolors)
   and choose it under Profiles > Colors > Color Presets.
 - **Terminal:** double-click
-  [`Machinist.terminal`](ports/terminal/Machinist.terminal) to add a profile;
-  select it in Settings > Profiles, and click Default to make it the default.
+  [`Machinist.terminal`](ports/terminal/Machinist.terminal) or
+  [`Machinist Light.terminal`](ports/terminal/Machinist%20Light.terminal) to
+  add a profile; select it in Settings > Profiles, and click Default to make
+  it the default. Terminal can't switch profiles with the appearance.
 
-Both iTerm2 files fill the light-mode and dark-mode color sets, so the theme
-stays dark when iTerm2 keeps separate colors for each. The iTerm2 and Terminal
-profiles set MesloLGS Nerd Font Mono at 13 pt, since the Starship prompt's
-glyphs need a Nerd Font; the Oh My Zsh theme installs it if it's missing.
+Each iTerm2 preset fills both the light-mode and dark-mode color sets with its
+own colors, so it holds when iTerm2 keeps separate colors for each. The iTerm2
+and Terminal profiles set MesloLGS Nerd Font Mono at 13 pt, since the
+Starship prompt's glyphs need a Nerd Font; the Oh My Zsh theme installs it if
+it's missing.
 
-All three files are generated from the Ghostty theme. After changing
-`ports/ghostty/machinist`, regenerate them:
+These files are generated from the two Ghostty themes. After changing either,
+regenerate them:
 
 ```sh
 swift Scripts/terminal-profiles.swift
@@ -190,7 +202,10 @@ c++ -std=c++17 -O2 -I /tmp/sclide -o ~/.local/bin/sclide-clear \
 
 `machinist.toml` is a complete prompt: Starship's Gruvbox Rainbow layout in
 the Machinist palette. Use it through the Oh My Zsh theme, or directly with
-`STARSHIP_CONFIG=~/code/machinist/ports/starship/machinist.toml`.
+`STARSHIP_CONFIG=~/code/machinist/ports/starship/machinist.toml`. It works in
+both themes: the segments carry their own colors, and the `❯` prompt symbol
+uses ANSI names — bright green, or red after a failed command — so the
+terminal's palette keeps it readable on either background.
 
 To recolor a different layout, copy its `[palettes.machinist]` table. It keeps
 the Gruvbox Rainbow preset's key names: `color_orange` through `color_blue`

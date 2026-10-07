@@ -66,17 +66,7 @@ struct GhosttyTheme {
     }
 }
 
-func itermProfile(from theme: GhosttyTheme) throws -> [String: Any] {
-    func component(_ color: Color) -> [String: Any] {
-        [
-            "Red Component": color.red,
-            "Green Component": color.green,
-            "Blue Component": color.blue,
-            "Alpha Component": 1.0,
-            "Color Space": "sRGB",
-        ]
-    }
-
+func itermColors(from theme: GhosttyTheme) throws -> [String: Color] {
     var colors: [String: Color] = [
         "Background Color": try theme.setting("background"),
         "Foreground Color": try theme.setting("foreground"),
@@ -89,18 +79,33 @@ func itermProfile(from theme: GhosttyTheme) throws -> [String: Any] {
     for index in 0..<16 {
         colors["Ansi \(index) Color"] = try theme.ansi(index)
     }
+    return colors
+}
+
+func itermProfile(light: GhosttyTheme, dark: GhosttyTheme) throws -> [String: Any] {
+    func component(_ color: Color) -> [String: Any] {
+        [
+            "Red Component": color.red,
+            "Green Component": color.green,
+            "Blue Component": color.blue,
+            "Alpha Component": 1.0,
+            "Color Space": "sRGB",
+        ]
+    }
 
     var profile: [String: Any] = [:]
-    for (key, color) in colors {
-        for variant in ["", " (Light)", " (Dark)"] {
-            profile[key + variant] = component(color)
-        }
+    for (key, color) in try itermColors(from: dark) {
+        profile[key] = component(color)
+        profile[key + " (Dark)"] = component(color)
+    }
+    for (key, color) in try itermColors(from: light) {
+        profile[key + " (Light)"] = component(color)
     }
     return profile
 }
 
-func itermDynamicProfile(from theme: GhosttyTheme, named name: String, font: String) throws -> [String: Any] {
-    var profile = try itermProfile(from: theme)
+func itermDynamicProfile(light: GhosttyTheme, dark: GhosttyTheme, named name: String, font: String) throws -> [String: Any] {
+    var profile = try itermProfile(light: light, dark: dark)
     profile["Name"] = name
     profile["Guid"] = "machinist-theme"
     profile["Normal Font"] = font
@@ -153,7 +158,10 @@ func write(_ plist: [String: Any], to url: URL) throws {
 }
 
 let ports = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().appending(path: "ports")
-let theme = try GhosttyTheme(contentsOf: ports.appending(path: "ghostty/machinist"))
-try write(try itermProfile(from: theme), to: ports.appending(path: "iterm2/Machinist.itermcolors"))
-try writeJSON(try itermDynamicProfile(from: theme, named: "Machinist", font: "MesloLGSNFM-Regular 13"), to: ports.appending(path: "iterm2/Machinist.json"))
-try write(try terminalProfile(from: theme, named: "Machinist", fontName: "MesloLGSNFM-Regular", fontSize: 13), to: ports.appending(path: "terminal/Machinist.terminal"))
+let dark = try GhosttyTheme(contentsOf: ports.appending(path: "ghostty/machinist"))
+let light = try GhosttyTheme(contentsOf: ports.appending(path: "ghostty/machinist-light"))
+try write(try itermProfile(light: dark, dark: dark), to: ports.appending(path: "iterm2/Machinist.itermcolors"))
+try write(try itermProfile(light: light, dark: light), to: ports.appending(path: "iterm2/Machinist Light.itermcolors"))
+try writeJSON(try itermDynamicProfile(light: light, dark: dark, named: "Machinist", font: "MesloLGSNFM-Regular 13"), to: ports.appending(path: "iterm2/Machinist.json"))
+try write(try terminalProfile(from: dark, named: "Machinist", fontName: "MesloLGSNFM-Regular", fontSize: 13), to: ports.appending(path: "terminal/Machinist.terminal"))
+try write(try terminalProfile(from: light, named: "Machinist Light", fontName: "MesloLGSNFM-Regular", fontSize: 13), to: ports.appending(path: "terminal/Machinist Light.terminal"))
